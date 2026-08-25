@@ -38,10 +38,6 @@ export default async function ProductsPage() {
           </thead>
           <tbody>
             {products.map((product) => {
-              const totalStock = product.variants.reduce(
-                (sum, v) => sum + v.stock,
-                0,
-              );
               const minPrice = Math.min(
                 ...product.variants.map((v) => v.priceCents),
               );
@@ -65,8 +61,24 @@ export default async function ProductsPage() {
                       ? formatPrice(minPrice)
                       : "—"}
                   </td>
-                  <td className="px-4 py-3 text-neutral-600">
-                    {totalStock}
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap gap-1">
+                      {product.variants.map((variant) => (
+                        <span
+                          key={variant.id}
+                          className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+                            variant.stock === 0
+                              ? "bg-red-100 text-red-700"
+                              : variant.stock <= 5
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-neutral-100 text-neutral-600"
+                          }`}
+                          title={`${variant.size}: ${variant.stock} em estoque`}
+                        >
+                          {variant.size}:{variant.stock}
+                        </span>
+                      ))}
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <span
@@ -79,17 +91,25 @@ export default async function ProductsPage() {
                       {product.active ? "Ativo" : "Inativo"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <form action={deleteProduct}>
-                      <input type="hidden" name="id" value={product.id} />
-                      <button
-                        type="submit"
-                        className="text-neutral-400 transition hover:text-red-600"
-                        aria-label={`Excluir ${product.name}`}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-3">
+                      <Link
+                        href={`/admin/products/${product.id}/edit`}
+                        className="text-sm font-medium text-brand-primary hover:underline"
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </form>
+                        Editar
+                      </Link>
+                      <form action={deleteProduct}>
+                        <input type="hidden" name="id" value={product.id} />
+                        <button
+                          type="submit"
+                          className="text-neutral-400 transition hover:text-red-600"
+                          aria-label={`Excluir ${product.name}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
               );

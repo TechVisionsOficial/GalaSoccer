@@ -13,3 +13,5 @@ export const typeLabels: Record<ProductType, string> = {
   RETRO: "Retrô",
   GOLEIRO: "Goleiro",
 };
+
+export const SIZES = ["P", "M", "G", "GG", "XG"] as const;

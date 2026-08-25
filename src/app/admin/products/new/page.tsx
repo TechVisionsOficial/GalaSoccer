@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { typeLabels } from "@/lib/enum-labels";
+import { typeLabels, SIZES } from "@/lib/enum-labels";
 import { createProduct } from "../actions";
-
-const SIZES = ["P", "M", "G", "GG", "XG"] as const;
 
 export default async function NewProductPage() {
   const teams = await prisma.team.findMany({ orderBy: { name: "asc" } });
