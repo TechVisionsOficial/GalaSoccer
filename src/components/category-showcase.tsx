@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { categoryGradients } from "@/lib/category-visuals";
 
 const categories = [
@@ -27,9 +28,9 @@ export function CategoryShowcase() {
         </h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
           {categories.map((category) => (
-            <a
+            <Link
               key={category.label}
-              href="#catalogo"
+              href={`/?categoria=${category.category}#catalogo`}
               className="group relative flex h-56 flex-col justify-end overflow-hidden rounded-xl p-6 text-brand-foreground shadow-sm transition hover:shadow-lg"
               style={{ background: categoryGradients[category.category] }}
             >
@@ -42,7 +43,7 @@ export function CategoryShowcase() {
                   {category.description}
                 </p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

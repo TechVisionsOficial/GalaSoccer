@@ -1,8 +1,25 @@
 import { prisma } from "@/lib/prisma";
+import type {
+  TeamCategory,
+  ProductType,
+} from "@/generated/prisma/enums";
 
-export function getActiveProducts() {
+export type ProductFilters = {
+  category?: TeamCategory;
+  teamSlug?: string;
+  type?: ProductType;
+};
+
+export function getActiveProducts(filters: ProductFilters = {}) {
   return prisma.product.findMany({
-    where: { active: true },
+    where: {
+      active: true,
+      ...(filters.type ? { type: filters.type } : {}),
+      team: {
+        ...(filters.category ? { category: filters.category } : {}),
+        ...(filters.teamSlug ? { slug: filters.teamSlug } : {}),
+      },
+    },
     include: {
       team: true,
       variants: { orderBy: { size: "asc" } },

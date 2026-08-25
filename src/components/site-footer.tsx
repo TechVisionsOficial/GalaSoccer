@@ -18,15 +18,27 @@ function InstagramIcon({ className }: { className?: string }) {
 const columns = [
   {
     title: "Categorias",
-    links: ["Nacional", "Internacional", "Seleções"],
+    links: [
+      { label: "Nacional", href: "/?categoria=NACIONAL#catalogo" },
+      { label: "Internacional", href: "/?categoria=INTERNACIONAL#catalogo" },
+      { label: "Seleções", href: "/?categoria=SELECAO#catalogo" },
+    ],
   },
   {
     title: "Institucional",
-    links: ["Sobre a loja", "Trocas e devoluções", "Política de privacidade"],
+    links: [
+      { label: "Sobre a loja", href: "#" },
+      { label: "Trocas e devoluções", href: "#" },
+      { label: "Política de privacidade", href: "#" },
+    ],
   },
   {
     title: "Ajuda",
-    links: ["Como comprar", "Formas de pagamento", "Fale conosco"],
+    links: [
+      { label: "Como comprar", href: "#" },
+      { label: "Formas de pagamento", href: "#" },
+      { label: "Fale conosco", href: "#" },
+    ],
   },
 ];
 
@@ -58,9 +70,12 @@ export function SiteFooter() {
               </h4>
               <ul className="mt-3 flex flex-col gap-2 text-sm">
                 {column.links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="hover:text-brand-accent-light">
-                      {link}
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="hover:text-brand-accent-light"
+                    >
+                      {link.label}
                     </a>
                   </li>
                 ))}

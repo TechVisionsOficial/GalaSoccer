@@ -14,15 +14,24 @@ export function SiteHeader() {
         </Link>
         <div className="flex items-center gap-6">
           <nav className="flex gap-6 text-sm">
-            <a href="#" className="hover:text-brand-accent-light">
+            <Link
+              href="/?categoria=NACIONAL#catalogo"
+              className="hover:text-brand-accent-light"
+            >
               Nacional
-            </a>
-            <a href="#" className="hover:text-brand-accent-light">
+            </Link>
+            <Link
+              href="/?categoria=INTERNACIONAL#catalogo"
+              className="hover:text-brand-accent-light"
+            >
               Internacional
-            </a>
-            <a href="#" className="hover:text-brand-accent-light">
+            </Link>
+            <Link
+              href="/?categoria=SELECAO#catalogo"
+              className="hover:text-brand-accent-light"
+            >
               Seleções
-            </a>
+            </Link>
           </nav>
           <UserMenu />
           <CartLink />

@@ -88,8 +88,10 @@ prisma/
 
 **Admin (`/admin`)**: CRUD funcional de Times, Produtos e visualização de Pedidos
 direto no Supabase via Server Actions (`teams/actions.ts`, `products/actions.ts`),
-validado com Zod. Ainda **sem autenticação** — qualquer um que acesse a rota
-consegue editar o catálogo. Precisa de Supabase Auth antes de ir pra produção.
+validado com Zod. Lista de produtos tem filtro por time/tipo/status via query
+string (form GET, sem JS client-side). Ainda **sem autenticação** — qualquer um
+que acesse a rota consegue editar o catálogo. Precisa de Supabase Auth antes de
+ir pra produção (separado do login de cliente).
 
 **Loja (`/`, `/produtos/[slug]`, `/times/[slug]`)**: conectada ao banco real (não
 usa mais dados fictícios). Cada produto tem página própria com seletor de tamanho
@@ -98,8 +100,12 @@ com estrelas restritas a compra verificada (nota + comentário,
 `components/review-form.tsx`, `app/produtos/[slug]/actions.ts`) e recomendações
 de produtos relacionados
 (`lib/products.ts#getRecommendedProducts` — prioriza mesmo time, completa com
-mesma categoria). Cada time também tem página própria (`/times/[slug]`) listando
-seus produtos; o nome do time é link pra lá tanto no card quanto na página do
+mesma categoria). Catálogo da home tem filtro por categoria/time/tipo via query
+string (`?categoria=&time=&tipo=`, form GET em `components/product-filters-bar.tsx`)
+— os links "Nacional/Internacional/Seleções" do menu, rodapé e da vitrine de
+categorias apontam pra esses filtros. Cada time também tem página própria
+(`/times/[slug]`) listando seus produtos; o nome do time é link pra lá tanto no
+card quanto na página do
 produto.
 
 **Login de cliente (`/login`, `/signup`)**: Supabase Auth — e-mail/senha e Google

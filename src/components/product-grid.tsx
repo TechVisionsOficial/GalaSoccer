@@ -1,8 +1,16 @@
-import { getActiveProducts } from "@/lib/products";
+import { getActiveProducts, type ProductFilters } from "@/lib/products";
 import { ProductCard } from "@/components/product-card";
+import { ProductFiltersBar } from "@/components/product-filters-bar";
 
-export async function ProductGrid() {
-  const products = await getActiveProducts();
+export async function ProductGrid({
+  filters = {},
+}: {
+  filters?: ProductFilters;
+}) {
+  const products = await getActiveProducts(filters);
+  const hasFilters = Boolean(
+    filters.category || filters.teamSlug || filters.type,
+  );
 
   return (
     <section className="w-full bg-white py-16">
@@ -11,9 +19,13 @@ export async function ProductGrid() {
           Mais vendidas
         </h2>
 
+        <ProductFiltersBar filters={filters} />
+
         {products.length === 0 ? (
           <p className="rounded-md border border-neutral-200 bg-neutral-50 px-4 py-8 text-center text-neutral-500">
-            Nenhum produto cadastrado ainda.
+            {hasFilters
+              ? "Nenhum produto encontrado com esses filtros."
+              : "Nenhum produto cadastrado ainda."}
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

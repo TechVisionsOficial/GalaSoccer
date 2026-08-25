@@ -3,13 +3,44 @@ import { Trash2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { typeLabels } from "@/lib/enum-labels";
 import { formatPrice } from "@/lib/format";
+import { ProductType } from "@/generated/prisma/enums";
 import { deleteProduct } from "./actions";
 
-export default async function ProductsPage() {
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { team: true, variants: true },
-  });
+const selectClass =
+  "rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-brand-primary";
+
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const teamId = typeof params.time === "string" ? params.time : "";
+  const type =
+    typeof params.tipo === "string" &&
+    (Object.values(ProductType) as string[]).includes(params.tipo)
+      ? (params.tipo as ProductType)
+      : undefined;
+  const status = typeof params.status === "string" ? params.status : "";
+
+  const [teams, products] = await Promise.all([
+    prisma.team.findMany({ orderBy: { name: "asc" } }),
+    prisma.product.findMany({
+      where: {
+        ...(teamId ? { teamId } : {}),
+        ...(type ? { type } : {}),
+        ...(status === "ativo"
+          ? { active: true }
+          : status === "inativo"
+            ? { active: false }
+            : {}),
+      },
+      orderBy: { createdAt: "desc" },
+      include: { team: true, variants: true },
+    }),
+  ]);
+
+  const hasFilters = Boolean(teamId || type || status);
 
   return (
     <div className="flex flex-col gap-6">
@@ -22,6 +53,84 @@ export default async function ProductsPage() {
           + Novo produto
         </Link>
       </div>
+
+      <form
+        action="/admin/products"
+        className="flex flex-wrap items-end gap-3"
+      >
+        <div className="flex flex-col gap-1">
+          <label htmlFor="time" className="text-xs font-medium text-neutral-500">
+            Time
+          </label>
+          <select
+            id="time"
+            name="time"
+            defaultValue={teamId}
+            className={selectClass}
+          >
+            <option value="">Todos</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label htmlFor="tipo" className="text-xs font-medium text-neutral-500">
+            Tipo
+          </label>
+          <select
+            id="tipo"
+            name="tipo"
+            defaultValue={type ?? ""}
+            className={selectClass}
+          >
+            <option value="">Todos</option>
+            {Object.entries(typeLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="status"
+            className="text-xs font-medium text-neutral-500"
+          >
+            Status
+          </label>
+          <select
+            id="status"
+            name="status"
+            defaultValue={status}
+            className={selectClass}
+          >
+            <option value="">Todos</option>
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-brand-foreground transition hover:bg-brand-primary-dark"
+        >
+          Filtrar
+        </button>
+
+        {hasFilters && (
+          <Link
+            href="/admin/products"
+            className="text-sm text-neutral-500 hover:text-neutral-700"
+          >
+            Limpar filtros
+          </Link>
+        )}
+      </form>
 
       <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
         <table className="w-full text-sm">
@@ -120,7 +229,9 @@ export default async function ProductsPage() {
                   colSpan={7}
                   className="px-4 py-8 text-center text-neutral-400"
                 >
-                  Nenhum produto cadastrado ainda.
+                  {hasFilters
+                    ? "Nenhum produto encontrado com esses filtros."
+                    : "Nenhum produto cadastrado ainda."}
                 </td>
               </tr>
             )}
