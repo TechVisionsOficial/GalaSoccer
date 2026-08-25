@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Minus, Plus, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteFooterCompact } from "@/components/site-footer-compact";
 import { useCart, type CartItem } from "@/components/cart-provider";
 import { formatPrice } from "@/lib/format";
 
@@ -111,7 +111,7 @@ export default function CartPage() {
           )}
         </div>
       </main>
-      <SiteFooter />
+      <SiteFooterCompact />
     </>
   );
 }

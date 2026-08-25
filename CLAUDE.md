@@ -44,6 +44,12 @@ sem precisar caçar cada uso:
 Qualquer componente deve usar essas classes semânticas (`bg-brand-primary`,
 `text-brand-accent`, etc.), nunca `bg-green-800` ou hex direto.
 
+`SiteHeader` é `sticky` (fica fixo ao rolar). Existem dois footers: `SiteFooter`
+(completo, 4 colunas) só nas páginas de navegação/descoberta (home, produto,
+time); `SiteFooterCompact` (uma linha, copyright + pagamento) em todas as
+páginas utilitárias/transacionais (carrinho, checkout, conta, login, cadastro)
+pra não ocupar espaço desproporcional em telas de fluxo curto.
+
 ## Modelo de dados
 
 Implementado em [`prisma/schema.prisma`](prisma/schema.prisma) — essa é a fonte de

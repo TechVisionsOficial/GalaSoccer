@@ -4,7 +4,7 @@ import { UserMenu } from "@/components/user-menu";
 
 export function SiteHeader() {
   return (
-    <header className="bg-brand-primary text-brand-foreground border-b border-brand-accent/30">
+    <header className="bg-brand-primary text-brand-foreground border-b border-brand-accent/30 sticky top-0 z-40 shadow-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link
           href="/"

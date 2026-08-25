@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteFooterCompact } from "@/components/site-footer-compact";
 import { GoogleAuthButton } from "@/components/google-auth-button";
 import { signUpWithPassword } from "./actions";
 
@@ -25,7 +25,7 @@ export default function SignupPage() {
             {state.message}
           </div>
         </main>
-        <SiteFooter />
+        <SiteFooterCompact />
       </>
     );
   }
@@ -99,7 +99,7 @@ export default function SignupPage() {
           </p>
         </div>
       </main>
-      <SiteFooter />
+      <SiteFooterCompact />
     </>
   );
 }

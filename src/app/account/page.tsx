@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteFooterCompact } from "@/components/site-footer-compact";
 import { AccountNav } from "@/components/account-nav";
 import { ProfileForm } from "@/components/profile-form";
 import { getCurrentCustomer } from "@/lib/current-customer";
@@ -35,7 +35,7 @@ export default async function AccountPage() {
           </div>
         </div>
       </main>
-      <SiteFooter />
+      <SiteFooterCompact />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteFooterCompact } from "@/components/site-footer-compact";
 import { OrderStatusCard } from "@/components/order-status-card";
 import { prisma } from "@/lib/prisma";
 import { isMercadoPagoConfigured } from "@/lib/mercadopago";
@@ -43,7 +43,7 @@ export default async function CheckoutPendingPage({
           order={order}
         />
       </main>
-      <SiteFooter />
+      <SiteFooterCompact />
     </>
   );
 }

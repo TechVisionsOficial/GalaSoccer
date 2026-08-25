@@ -1,10 +1,48 @@
 import Link from "next/link";
+import { ChevronDown, Filter, Shirt, Tag, X } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { categoryLabels, typeLabels } from "@/lib/enum-labels";
 import type { ProductFilters } from "@/lib/products";
 
-const selectClass =
-  "rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-brand-primary";
+function FilterField({
+  id,
+  label,
+  icon: Icon,
+  defaultValue,
+  children,
+}: {
+  id: string;
+  label: string;
+  icon: typeof Tag;
+  defaultValue: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label
+        htmlFor={id}
+        className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-brand-primary/70 uppercase"
+      >
+        <Icon className="h-3.5 w-3.5" strokeWidth={2} />
+        {label}
+      </label>
+      <div className="relative">
+        <select
+          id={id}
+          name={id}
+          defaultValue={defaultValue}
+          className="appearance-none rounded-full border border-brand-primary/20 bg-white py-2 pr-9 pl-4 text-sm text-neutral-900 outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-accent/30"
+        >
+          {children}
+        </select>
+        <ChevronDown
+          className="pointer-events-none absolute top-1/2 right-3 h-3.5 w-3.5 -translate-y-1/2 text-brand-primary/50"
+          strokeWidth={2}
+        />
+      </div>
+    </div>
+  );
+}
 
 export async function ProductFiltersBar({
   filters,
@@ -17,22 +55,13 @@ export async function ProductFiltersBar({
   );
 
   return (
-    <form
-      action="/"
-      className="mb-6 flex flex-wrap items-end gap-3 border-b border-neutral-100 pb-6"
-    >
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="categoria"
-          className="text-xs font-medium text-neutral-500"
-        >
-          Categoria
-        </label>
-        <select
+    <div className="mb-8 rounded-2xl border border-brand-primary/15 bg-gradient-to-br from-brand-primary/5 to-brand-accent/5 p-5">
+      <form action="/" className="flex flex-wrap items-end gap-4">
+        <FilterField
           id="categoria"
-          name="categoria"
+          label="Categoria"
+          icon={Tag}
           defaultValue={filters.category ?? ""}
-          className={selectClass}
         >
           <option value="">Todas</option>
           {Object.entries(categoryLabels).map(([value, label]) => (
@@ -40,18 +69,13 @@ export async function ProductFiltersBar({
               {label}
             </option>
           ))}
-        </select>
-      </div>
+        </FilterField>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="time" className="text-xs font-medium text-neutral-500">
-          Time
-        </label>
-        <select
+        <FilterField
           id="time"
-          name="time"
+          label="Time"
+          icon={Shirt}
           defaultValue={filters.teamSlug ?? ""}
-          className={selectClass}
         >
           <option value="">Todos</option>
           {teams.map((team) => (
@@ -59,18 +83,13 @@ export async function ProductFiltersBar({
               {team.name}
             </option>
           ))}
-        </select>
-      </div>
+        </FilterField>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="tipo" className="text-xs font-medium text-neutral-500">
-          Tipo
-        </label>
-        <select
+        <FilterField
           id="tipo"
-          name="tipo"
+          label="Tipo"
+          icon={Filter}
           defaultValue={filters.type ?? ""}
-          className={selectClass}
         >
           <option value="">Todos</option>
           {Object.entries(typeLabels).map(([value, label]) => (
@@ -78,24 +97,26 @@ export async function ProductFiltersBar({
               {label}
             </option>
           ))}
-        </select>
-      </div>
+        </FilterField>
 
-      <button
-        type="submit"
-        className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-brand-foreground transition hover:bg-brand-primary-dark"
-      >
-        Filtrar
-      </button>
-
-      {hasFilters && (
-        <Link
-          href="/#catalogo"
-          className="text-sm text-neutral-500 hover:text-neutral-700"
+        <button
+          type="submit"
+          className="flex items-center gap-2 rounded-full bg-brand-primary px-6 py-2 text-sm font-semibold text-brand-foreground shadow-sm transition hover:bg-brand-primary-dark"
         >
-          Limpar filtros
-        </Link>
-      )}
-    </form>
+          <Filter className="h-3.5 w-3.5" strokeWidth={2} />
+          Filtrar
+        </button>
+
+        {hasFilters && (
+          <Link
+            href="/#catalogo"
+            className="flex items-center gap-1 rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-600 transition hover:border-neutral-400 hover:text-neutral-800"
+          >
+            <X className="h-3.5 w-3.5" strokeWidth={2} />
+            Limpar
+          </Link>
+        )}
+      </form>
+    </div>
   );
 }

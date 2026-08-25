@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteFooterCompact } from "@/components/site-footer-compact";
 import { useCart } from "@/components/cart-provider";
 import { formatPrice } from "@/lib/format";
 import { createOrder } from "./actions";
@@ -78,7 +78,7 @@ export default function CheckoutPage() {
             </Link>
           </div>
         </main>
-        <SiteFooter />
+        <SiteFooterCompact />
       </>
     );
   }
@@ -213,7 +213,7 @@ export default function CheckoutPage() {
           </form>
         </div>
       </main>
-      <SiteFooter />
+      <SiteFooterCompact />
     </>
   );
 }

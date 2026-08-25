@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteFooterCompact } from "@/components/site-footer-compact";
 import { GoogleAuthButton } from "@/components/google-auth-button";
 import { signInWithPassword } from "./actions";
 
@@ -76,7 +76,7 @@ export default function LoginPage() {
           </p>
         </div>
       </main>
-      <SiteFooter />
+      <SiteFooterCompact />
     </>
   );
 }
