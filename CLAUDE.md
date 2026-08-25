@@ -69,14 +69,21 @@ lê a URL de [`prisma7.config.ts`](prisma7.config.ts). O client gerado vai para
 ```
 src/
   app/            # rotas (App Router)
-    admin/        # painel administrativo (placeholder por enquanto)
-    page.tsx      # home da loja
+    admin/        # painel administrativo (CRUD de times e produtos, sem auth ainda)
+      teams/      # listar/criar times
+      products/   # listar/criar produtos (com variantes por tamanho)
+    page.tsx      # home da loja (ainda com dados fictícios, ver mock-products.ts)
   components/     # componentes de UI compartilhados
-  lib/            # clients e utilitários (ex: prisma.ts)
+  lib/            # clients e utilitários (prisma.ts, slugify.ts, mock-products.ts)
   generated/      # código gerado (Prisma Client) — gitignored
 prisma/
   schema.prisma   # modelo de dados
 ```
+
+**Admin (`/admin`)**: CRUD funcional de Times e Produtos direto no Supabase via
+Server Actions (`teams/actions.ts`, `products/actions.ts`), validado com Zod. Ainda
+**sem autenticação** — qualquer um que acesse a rota consegue editar o catálogo.
+Precisa de Supabase Auth antes de ir pra produção.
 
 ## Variáveis de ambiente
 
