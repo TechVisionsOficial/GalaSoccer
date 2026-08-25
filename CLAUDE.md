@@ -72,9 +72,11 @@ src/
     admin/        # painel administrativo (CRUD de times e produtos, sem auth ainda)
       teams/      # listar/criar times
       products/   # listar/criar produtos (com variantes por tamanho)
-    page.tsx      # home da loja (ainda com dados fictícios, ver mock-products.ts)
+    produtos/[slug]/  # página individual do produto (dados reais, seletor de tamanho)
+    page.tsx      # home da loja (dados reais via lib/products.ts)
   components/     # componentes de UI compartilhados
-  lib/            # clients e utilitários (prisma.ts, slugify.ts, mock-products.ts)
+  lib/            # clients e utilitários (prisma.ts, slugify.ts, products.ts,
+                  # format.ts, enum-labels.ts, category-visuals.ts)
   generated/      # código gerado (Prisma Client) — gitignored
 prisma/
   schema.prisma   # modelo de dados
@@ -84,6 +86,16 @@ prisma/
 Server Actions (`teams/actions.ts`, `products/actions.ts`), validado com Zod. Ainda
 **sem autenticação** — qualquer um que acesse a rota consegue editar o catálogo.
 Precisa de Supabase Auth antes de ir pra produção.
+
+**Loja (`/`, `/produtos/[slug]`)**: já conectada ao banco real (não usa mais dados
+fictícios). Cada produto tem página própria com seletor de tamanho
+(`components/size-selector.tsx`) mostrando preço e estoque por variante. O botão
+"Adicionar ao carrinho" ainda é só uma prévia de interação — carrinho e checkout
+(Mercado Pago) são o próximo passo.
+
+Sem foto de produto real ainda: cards e página do produto usam um placeholder com
+gradiente por categoria (`lib/category-visuals.ts`) + iniciais do time
+(`lib/format.ts`). Trocar por `<Image>` real quando houver fotos.
 
 ## Variáveis de ambiente
 

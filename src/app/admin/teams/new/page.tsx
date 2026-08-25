@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { categoryLabels } from "@/lib/mock-products";
+import { categoryLabels } from "@/lib/enum-labels";
 import { createTeam } from "../actions";
 
 export default function NewTeamPage() {

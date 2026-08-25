@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { categoryLabels } from "@/lib/mock-products";
+import { categoryLabels } from "@/lib/enum-labels";
 import { deleteTeam } from "./actions";
 
 export default async function TeamsPage() {

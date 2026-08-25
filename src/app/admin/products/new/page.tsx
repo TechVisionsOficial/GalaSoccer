@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { typeLabels } from "@/lib/mock-products";
+import { typeLabels } from "@/lib/enum-labels";
 import { createProduct } from "../actions";
 
 const SIZES = ["P", "M", "G", "GG", "XG"] as const;

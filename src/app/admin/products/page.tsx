@@ -1,15 +1,9 @@
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { typeLabels } from "@/lib/mock-products";
+import { typeLabels } from "@/lib/enum-labels";
+import { formatPrice } from "@/lib/format";
 import { deleteProduct } from "./actions";
-
-function formatPrice(cents: number) {
-  return (cents / 100).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
 
 export default async function ProductsPage() {
   const products = await prisma.product.findMany({

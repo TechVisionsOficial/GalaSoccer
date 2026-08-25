@@ -1,18 +1,20 @@
+import { categoryGradients } from "@/lib/category-visuals";
+
 const categories = [
   {
+    category: "NACIONAL" as const,
     label: "Nacional",
     description: "Camisas dos maiores clubes do futebol brasileiro.",
-    gradient: "linear-gradient(135deg, #1a4d2e, #0a1f14)",
   },
   {
+    category: "INTERNACIONAL" as const,
     label: "Internacional",
     description: "Os grandes clubes da Europa e do mundo.",
-    gradient: "linear-gradient(135deg, #2b3a67, #0f172a)",
   },
   {
+    category: "SELECAO" as const,
     label: "Seleções",
     description: "Vista as cores do seu país nos maiores torneios.",
-    gradient: "linear-gradient(135deg, #6b3a1f, #2b1710)",
   },
 ];
 
@@ -29,7 +31,7 @@ export function CategoryShowcase() {
               key={category.label}
               href="#catalogo"
               className="group relative flex h-56 flex-col justify-end overflow-hidden rounded-xl p-6 text-brand-foreground shadow-sm transition hover:shadow-lg"
-              style={{ background: category.gradient }}
+              style={{ background: categoryGradients[category.category] }}
             >
               <div className="absolute inset-0 bg-black/10 transition group-hover:bg-black/0" />
               <div className="relative">
