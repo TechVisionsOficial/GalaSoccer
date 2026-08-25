@@ -114,6 +114,13 @@ checkout"). `/checkout` coleta dados do cliente + endereço e chama a Server Act
 `Payment.method` é opcional no schema: só sabemos Pix/boleto/cartão depois que o
 cliente escolhe na página do Mercado Pago.
 
+## Dados de exemplo
+
+`prisma/seed.ts` cadastra 7 times e 10 produtos (com variantes/estoque) pra dar
+volume de teste ao catálogo. É idempotente (usa slug pra não duplicar se rodar de
+novo). Rodar com `npx tsx prisma/seed.ts` — não usar `prisma db seed` (CLI do
+Prisma tem o mesmo problema de rede em ambiente sandboxed descrito acima).
+
 ## Variáveis de ambiente
 
 Ver [`.env.example`](.env.example) — copiar para `.env` (nunca commitado) e
