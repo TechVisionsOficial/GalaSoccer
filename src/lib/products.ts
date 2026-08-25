@@ -18,8 +18,41 @@ export function getProductBySlug(slug: string) {
       team: true,
       variants: { orderBy: { size: "asc" } },
       images: { orderBy: { position: "asc" } },
+      reviews: { orderBy: { createdAt: "desc" } },
     },
   });
+}
+
+/** Prioriza produtos do mesmo time; completa com produtos da mesma categoria
+ * se o time não tiver outros produtos suficientes. */
+export async function getRecommendedProducts(
+  productId: string,
+  teamId: string,
+  category: "NACIONAL" | "INTERNACIONAL" | "SELECAO",
+  limit = 4,
+) {
+  const sameTeam = await prisma.product.findMany({
+    where: { active: true, teamId, id: { not: productId } },
+    include: { team: true, variants: { orderBy: { size: "asc" } } },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+
+  if (sameTeam.length >= limit) return sameTeam;
+
+  const excludeIds = [productId, ...sameTeam.map((p) => p.id)];
+  const sameCategory = await prisma.product.findMany({
+    where: {
+      active: true,
+      id: { notIn: excludeIds },
+      team: { category },
+    },
+    include: { team: true, variants: { orderBy: { size: "asc" } } },
+    orderBy: { createdAt: "desc" },
+    take: limit - sameTeam.length,
+  });
+
+  return [...sameTeam, ...sameCategory];
 }
 
 export type ActiveProduct = Awaited<

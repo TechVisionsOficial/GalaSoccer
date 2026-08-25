@@ -11,18 +11,16 @@ export function ProductCard({ product }: { product: ActiveProduct }) {
   );
 
   return (
-    <Link
-      href={`/produtos/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-lg border border-brand-primary/10 bg-white shadow-sm transition hover:shadow-md"
-    >
-      <div
+    <div className="group flex flex-col overflow-hidden rounded-lg border border-brand-primary/10 bg-white shadow-sm transition hover:shadow-md">
+      <Link
+        href={`/produtos/${product.slug}`}
         className="flex aspect-square items-center justify-center"
         style={{ background: categoryGradients[product.team.category] }}
       >
         <span className="text-4xl font-black tracking-widest text-white/90 drop-shadow-sm">
           {teamInitials(product.team.name)}
         </span>
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex items-center gap-2 text-xs">
@@ -35,7 +33,18 @@ export function ProductCard({ product }: { product: ActiveProduct }) {
           </span>
         </div>
 
-        <h3 className="font-semibold text-neutral-900">{product.name}</h3>
+        <Link
+          href={`/times/${product.team.slug}`}
+          className="text-xs font-medium text-neutral-500 hover:text-brand-primary hover:underline"
+        >
+          {product.team.name}
+        </Link>
+
+        <Link href={`/produtos/${product.slug}`}>
+          <h3 className="font-semibold text-neutral-900 hover:text-brand-primary">
+            {product.name}
+          </h3>
+        </Link>
 
         <div className="flex flex-wrap gap-1">
           {product.variants.map((variant) => (
@@ -56,11 +65,14 @@ export function ProductCard({ product }: { product: ActiveProduct }) {
           <span className="text-lg font-bold text-brand-primary">
             {formatPrice(minPriceCents)}
           </span>
-          <span className="rounded-md bg-brand-primary px-3 py-1.5 text-sm font-medium text-brand-foreground transition group-hover:bg-brand-primary-dark">
+          <Link
+            href={`/produtos/${product.slug}`}
+            className="rounded-md bg-brand-primary px-3 py-1.5 text-sm font-medium text-brand-foreground transition group-hover:bg-brand-primary-dark"
+          >
             {availableSizes.length > 0 ? "Ver produto" : "Esgotado"}
-          </span>
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

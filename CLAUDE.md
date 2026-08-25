@@ -56,6 +56,8 @@ verdade a partir de agora, não esta lista:
 - `Customer` / `Address` — cliente final e endereços de entrega.
 - `Order` / `OrderItem` — pedido e itens.
 - `Payment` — status e referência da transação Mercado Pago.
+- `Review` — avaliação com nota (1-5) e comentário, sem exigir login (mesmo
+  padrão guest do checkout — nome informado na hora).
 - `Admin` — usuário do painel administrativo.
 
 **Prisma 7**: a connection string do datasource não vai mais no `schema.prisma`
@@ -87,9 +89,15 @@ direto no Supabase via Server Actions (`teams/actions.ts`, `products/actions.ts`
 validado com Zod. Ainda **sem autenticação** — qualquer um que acesse a rota
 consegue editar o catálogo. Precisa de Supabase Auth antes de ir pra produção.
 
-**Loja (`/`, `/produtos/[slug]`)**: conectada ao banco real (não usa mais dados
-fictícios). Cada produto tem página própria com seletor de tamanho
-(`components/size-selector.tsx`) mostrando preço e estoque por variante.
+**Loja (`/`, `/produtos/[slug]`, `/times/[slug]`)**: conectada ao banco real (não
+usa mais dados fictícios). Cada produto tem página própria com seletor de tamanho
+(`components/size-selector.tsx`) mostrando preço e estoque por variante, avaliações
+com estrelas (nota + comentário, `components/review-form.tsx`,
+`app/produtos/[slug]/actions.ts`) e recomendações de produtos relacionados
+(`lib/products.ts#getRecommendedProducts` — prioriza mesmo time, completa com
+mesma categoria). Cada time também tem página própria (`/times/[slug]`) listando
+seus produtos; o nome do time é link pra lá tanto no card quanto na página do
+produto.
 
 Sem foto de produto real ainda: cards e página do produto usam um placeholder com
 gradiente por categoria (`lib/category-visuals.ts`) + iniciais do time

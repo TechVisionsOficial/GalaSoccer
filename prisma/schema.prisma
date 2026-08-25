@@ -51,9 +51,23 @@ model Product {
   images     ProductImage[]
   variants   ProductVariant[]
   orderItems OrderItem[]
+  reviews    Review[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Sem login de cliente ainda, então avaliação é "guest" — mesmo padrão do
+// checkout (nome informado na hora, sem conta).
+model Review {
+  id         String   @id @default(cuid())
+  rating     Int // 1 a 5
+  authorName String
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductImage {
