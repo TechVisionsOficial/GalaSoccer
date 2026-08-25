@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /*
+   * Tokens de marca (Gala Soccer). Ajuste só os valores aqui quando o
+   * cliente definir a paleta oficial — nunca use hex/verde/dourado direto
+   * nos componentes, sempre as classes utilitárias geradas abaixo
+   * (bg-brand-primary, text-brand-accent, etc.).
+   */
+  --brand-primary: #0f2b1d;       /* verde escuro do fundo da logo */
+  --brand-primary-dark: #081a11;  /* variação mais escura, para profundidade */
+  --brand-accent: #c9a24b;        /* dourado/champanhe dos detalhes */
+  --brand-accent-light: #e4c877;  /* dourado mais claro, para hover/destaque */
+  --brand-foreground: #f5f1e6;    /* texto claro sobre fundo escuro da marca */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-dark: var(--brand-primary-dark);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-accent-light: var(--brand-accent-light);
+  --color-brand-foreground: var(--brand-foreground);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
