@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/format";
 
@@ -38,6 +39,7 @@ export default async function OrdersPage() {
               <th className="px-4 py-3 font-medium">Pagamento</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium">Data</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
@@ -74,12 +76,20 @@ export default async function OrdersPage() {
                 <td className="px-4 py-3 text-neutral-500">
                   {order.createdAt.toLocaleDateString("pt-BR")}
                 </td>
+                <td className="px-4 py-3 text-right">
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="text-sm font-medium text-brand-primary hover:underline"
+                  >
+                    Ver
+                  </Link>
+                </td>
               </tr>
             ))}
             {orders.length === 0 && (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={8}
                   className="px-4 py-8 text-center text-neutral-400"
                 >
                   Nenhum pedido ainda.
