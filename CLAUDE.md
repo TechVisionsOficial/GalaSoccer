@@ -81,8 +81,25 @@ prisma/
 ## Variáveis de ambiente
 
 Ver [`.env.example`](.env.example) — copiar para `.env` (nunca commitado) e
-preencher: `DATABASE_URL` (Supabase Postgres), chaves do Supabase, Mercado Pago
-e Resend.
+preencher: `DATABASE_URL` + `DIRECT_URL` (Supabase Postgres), chaves do Supabase,
+Mercado Pago e Resend.
+
+Banco Supabase (projeto `GalaSoccer`, região `sa-east-1`/São Paulo) já provisionado
+e com o schema aplicado. As URLs de conexão usam `sslmode=require&uselibpqcompat=true`
+— necessário porque o pooler do Supabase apresenta uma cadeia de certificado que o
+`pg`/Prisma trata como "self-signed" sob verificação estrita; esse combo mantém a
+conexão criptografada sem falhar na validação. Pegar os valores reais em Supabase →
+Connect → ORMs → Prisma.
+
+**Nota sobre ambiente de desenvolvimento sandboxed**: o binário do Prisma
+(schema-engine, usado por `migrate dev`/`db push`) não conseguiu abrir conexão de
+rede neste ambiente sandboxed específico (trava indefinidamente, mesmo com o TCP
+abrindo) — mas a lib `pg` usada em runtime conecta normalmente. A migration inicial
+foi aplicada manualmente executando o SQL gerado por
+`prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script`
+direto via `pg`, e registrada em `_prisma_migrations` para manter o histórico do
+Prisma consistente. Rodando de uma máquina/CI sem essa restrição de rede,
+`prisma migrate dev` deve funcionar normalmente — não é um problema do schema.
 
 ## Convenções de código
 
