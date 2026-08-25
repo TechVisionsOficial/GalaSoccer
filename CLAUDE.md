@@ -114,6 +114,14 @@ Authentication → Providers → Google (Client ID/Secret do Google Cloud OAuth
 consent screen, redirect URI `https://<project-ref>.supabase.co/auth/v1/callback`).
 É um sistema **separado** do login do `/admin` (que ainda não existe).
 
+**Área do cliente (`/account`)**: protegida — redireciona pra `/login` se não
+autenticado (`lib/current-customer.ts#getCurrentCustomer`, que resolve o
+`Customer` do Prisma a partir da sessão Supabase pelo e-mail). Mostra
+nome/e-mail/telefone (editável, `components/profile-form.tsx`) e histórico de
+pedidos do cliente, com detalhe em `/account/orders/[id]` — sempre confere
+`order.customerId === customer.id` antes de mostrar, pra um cliente nunca ver
+pedido de outro só adivinhando o ID.
+
 Sem foto de produto real ainda: cards e página do produto usam um placeholder com
 gradiente por categoria (`lib/category-visuals.ts`) + iniciais do time
 (`lib/format.ts`). Trocar por `<Image>` real quando houver fotos.

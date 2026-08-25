@@ -67,7 +67,9 @@ export function UserMenu() {
 
   return (
     <div className="flex items-center gap-3 text-sm">
-      <span>{firstName}</span>
+      <Link href="/account" className="hover:text-brand-accent-light">
+        {firstName}
+      </Link>
       <button
         type="button"
         onClick={handleSignOut}
