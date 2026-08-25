@@ -114,8 +114,11 @@ export async function updateProduct(formData: FormData) {
     });
 
     for (const variant of variantUpdates) {
-      await tx.productVariant.update({
-        where: { id: variant.id },
+      // updateMany + productId no where: garante que o formulário só
+      // consegue alterar variantes que realmente pertencem a este produto,
+      // mesmo que alguém envie um variantId de outro produto manualmente.
+      await tx.productVariant.updateMany({
+        where: { id: variant.id, productId: parsed.productId },
         data: { priceCents: variant.priceCents, stock: variant.stock },
       });
     }

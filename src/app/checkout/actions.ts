@@ -44,14 +44,8 @@ export async function createOrder(input: CheckoutInput) {
   const variantMap = new Map(variants.map((v) => [v.id, v]));
 
   for (const item of parsed.items) {
-    const variant = variantMap.get(item.variantId);
-    if (!variant) {
+    if (!variantMap.has(item.variantId)) {
       throw new Error("Um dos produtos do carrinho não existe mais.");
-    }
-    if (variant.stock < item.quantity) {
-      throw new Error(
-        `Estoque insuficiente para ${variant.product.name} (${variant.size}).`,
-      );
     }
   }
 
@@ -94,11 +88,20 @@ export async function createOrder(input: CheckoutInput) {
       },
     });
 
+    // Checagem + decremento atômicos: o WHERE com stock >= quantity garante
+    // que, sob concorrência, só um comprador consegue levar a última
+    // unidade — evita vender estoque negativo (condição de corrida).
     for (const item of parsed.items) {
-      await tx.productVariant.update({
-        where: { id: item.variantId },
+      const variant = variantMap.get(item.variantId)!;
+      const { count } = await tx.productVariant.updateMany({
+        where: { id: item.variantId, stock: { gte: item.quantity } },
         data: { stock: { decrement: item.quantity } },
       });
+      if (count === 0) {
+        throw new Error(
+          `Estoque insuficiente para ${variant.product.name} (${variant.size}).`,
+        );
+      }
     }
 
     return createdOrder;

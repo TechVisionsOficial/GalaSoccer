@@ -95,9 +95,16 @@ prisma/
 **Admin (`/admin`)**: CRUD funcional de Times, Produtos e visualização de Pedidos
 direto no Supabase via Server Actions (`teams/actions.ts`, `products/actions.ts`),
 validado com Zod. Lista de produtos tem filtro por time/tipo/status via query
-string (form GET, sem JS client-side). Ainda **sem autenticação** — qualquer um
-que acesse a rota consegue editar o catálogo. Precisa de Supabase Auth antes de
-ir pra produção (separado do login de cliente).
+string (form GET, sem JS client-side). **Protegido por login** (`/admin/login`,
+Supabase Auth) — separado do login de cliente, checado contra a tabela `Admin`
+do Prisma (não basta logar no Supabase, o e-mail precisa estar cadastrado como
+Admin — `lib/current-admin.ts#getCurrentAdmin`). As rotas protegidas ficam no
+route group `app/admin/(dashboard)/`, cujo `layout.tsx` faz o `redirect` pra
+`/admin/login` se não autenticado; `app/admin/login/` fica fora do grupo de
+propósito, senão o próprio login entraria em loop de redirecionamento. Pra
+cadastrar um novo admin: inserir direto na tabela `Admin` com o
+`supabaseUserId` de um usuário já existente no Supabase Auth (não tem UI pra
+isso ainda — só o primeiro admin foi criado assim, via script).
 
 **Loja (`/`, `/produtos/[slug]`, `/times/[slug]`)**: conectada ao banco real (não
 usa mais dados fictícios). Cada produto tem página própria com seletor de tamanho
@@ -144,7 +151,10 @@ checkout"). `/checkout` coleta dados do cliente + endereço e chama a Server Act
 `createOrder` (`checkout/actions.ts`), que:
 1. Revalida preço/estoque contra o banco (nunca confia no que o client mandou).
 2. Cria Customer (upsert por e-mail) + Address + Order + OrderItems + Payment
-   (tudo numa transação), decrementando o estoque das variantes.
+   (tudo numa transação), decrementando o estoque das variantes. O decremento
+   usa `updateMany` com `stock: { gte: quantity }` no `where` — checagem e
+   decremento atômicos, pra dois compradores concorrentes não conseguirem
+   ambos levar a última unidade (condição de corrida).
 3. Se `MERCADOPAGO_ACCESS_TOKEN` estiver configurado, cria uma *preference* no
    Mercado Pago (Checkout Pro) e redireciona pro checkout hospedado deles: página
    /checkout/sucesso, /checkout/erro ou /checkout/pendente confirma o pagamento
@@ -156,6 +166,13 @@ checkout"). `/checkout` coleta dados do cliente + endereço e chama a Server Act
 
 `Payment.method` é opcional no schema: só sabemos Pix/boleto/cartão depois que o
 cliente escolhe na página do Mercado Pago.
+
+O webhook (`api/webhooks/mercadopago/route.ts`) confere a assinatura da
+notificação (`lib/mercadopago.ts#verifyMercadoPagoSignature`, header
+`x-signature`) antes de processar — precisa de `MERCADOPAGO_WEBHOOK_SECRET`
+configurado (Mercado Pago → sua aplicação → Webhooks → detalhes); sem essa
+variável, a validação é pulada (mesmo padrão de degradação graciosa do resto
+da integração).
 
 ## Dados de exemplo
 

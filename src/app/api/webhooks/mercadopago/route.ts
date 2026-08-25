@@ -1,4 +1,7 @@
-import { isMercadoPagoConfigured } from "@/lib/mercadopago";
+import {
+  isMercadoPagoConfigured,
+  verifyMercadoPagoSignature,
+} from "@/lib/mercadopago";
 import { syncPaymentFromMercadoPago } from "@/lib/order-sync";
 
 export async function POST(request: Request) {
@@ -11,6 +14,17 @@ export async function POST(request: Request) {
 
   if (body?.type !== "payment" || !paymentId) {
     return new Response("ignored", { status: 200 });
+  }
+
+  const isValid = verifyMercadoPagoSignature({
+    signatureHeader: request.headers.get("x-signature"),
+    requestId: request.headers.get("x-request-id"),
+    dataId: String(paymentId),
+  });
+
+  if (!isValid) {
+    console.error("Webhook Mercado Pago com assinatura inválida — ignorado.");
+    return new Response("invalid signature", { status: 401 });
   }
 
   try {

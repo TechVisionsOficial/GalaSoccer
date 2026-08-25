@@ -5,7 +5,11 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  const rawNext = searchParams.get("next") ?? "/";
+  // Só aceita caminho interno (começando com "/", mas não "//" — evita
+  // redirecionamento pra fora do site via URL protocol-relative).
+  const next =
+    rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
 
   if (code) {
     const supabase = await createClient();

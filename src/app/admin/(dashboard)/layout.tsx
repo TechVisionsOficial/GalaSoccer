@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { LayoutDashboard, Shirt, Users2, Receipt } from "lucide-react";
+import { redirect } from "next/navigation";
+import { LayoutDashboard, LogOut, Shirt, Users2, Receipt } from "lucide-react";
+import { getCurrentAdmin } from "@/lib/current-admin";
+import { signOutAdmin } from "../login/actions";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -8,11 +11,17 @@ const navItems = [
   { href: "/admin/orders", label: "Pedidos", icon: Receipt },
 ];
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const admin = await getCurrentAdmin();
+
+  if (!admin) {
+    redirect("/admin/login");
+  }
+
   return (
     <div className="flex min-h-screen bg-neutral-50">
       <aside className="flex w-60 shrink-0 flex-col border-r border-neutral-200 bg-brand-primary text-brand-foreground">
@@ -34,7 +43,17 @@ export default function AdminLayout({
             </Link>
           ))}
         </nav>
-        <div className="mt-auto px-6 py-4 text-xs text-brand-foreground/50">
+        <div className="mt-auto flex flex-col gap-2 px-6 py-4 text-xs text-brand-foreground/50">
+          <span className="text-brand-foreground/70">{admin.name}</span>
+          <form action={signOutAdmin}>
+            <button
+              type="submit"
+              className="flex items-center gap-1.5 hover:text-brand-accent-light"
+            >
+              <LogOut className="h-3.5 w-3.5" strokeWidth={2} />
+              Sair
+            </button>
+          </form>
           <Link href="/" className="hover:text-brand-accent-light">
             ← voltar para a loja
           </Link>

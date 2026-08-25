@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { MercadoPagoConfig, Payment, Preference } from "mercadopago";
 
 export function isMercadoPagoConfigured() {
@@ -44,4 +45,49 @@ export function mapMpStatusToPaymentStatus(
   if (status === "approved") return "APPROVED";
   if (status === "rejected" || status === "cancelled") return "REJECTED";
   return "PENDING";
+}
+
+/**
+ * Confere a assinatura do webhook do Mercado Pago (header `x-signature`),
+ * pra garantir que a notificação veio deles de verdade e não foi forjada.
+ * Formato documentado: https://www.mercadopago.com.br/developers/pt/docs/checkout-api/webhooks
+ *
+ * Se `MERCADOPAGO_WEBHOOK_SECRET` não estiver configurado, a validação é
+ * pulada (retorna true) — mesmo padrão de degradação graciosa que usamos
+ * pro resto da integração, até a credencial ser configurada.
+ */
+export function verifyMercadoPagoSignature({
+  signatureHeader,
+  requestId,
+  dataId,
+}: {
+  signatureHeader: string | null;
+  requestId: string | null;
+  dataId: string;
+}): boolean {
+  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  if (!secret) return true;
+
+  if (!signatureHeader || !requestId) return false;
+
+  const parts = Object.fromEntries(
+    signatureHeader.split(",").map((pair) => {
+      const [key, value] = pair.split("=");
+      return [key?.trim(), value?.trim()];
+    }),
+  );
+  const ts = parts.ts;
+  const receivedHash = parts.v1;
+  if (!ts || !receivedHash) return false;
+
+  const manifest = `id:${dataId.toLowerCase()};request-id:${requestId};ts:${ts};`;
+  const expectedHash = createHmac("sha256", secret)
+    .update(manifest)
+    .digest("hex");
+
+  const expected = Buffer.from(expectedHash, "utf8");
+  const received = Buffer.from(receivedHash, "utf8");
+  if (expected.length !== received.length) return false;
+
+  return timingSafeEqual(expected, received);
 }

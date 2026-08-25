@@ -9,7 +9,19 @@ import { slugify } from "@/lib/slugify";
 const teamSchema = z.object({
   name: z.string().trim().min(2, "Nome muito curto"),
   category: z.enum(["NACIONAL", "INTERNACIONAL", "SELECAO"]),
-  crestUrl: z.union([z.literal(""), z.string().trim().url()]).optional(),
+  crestUrl: z
+    .union([
+      z.literal(""),
+      z
+        .string()
+        .trim()
+        .url()
+        .refine(
+          (url) => url.startsWith("http://") || url.startsWith("https://"),
+          "URL precisa começar com http:// ou https://",
+        ),
+    ])
+    .optional(),
 });
 
 export async function createTeam(formData: FormData) {
