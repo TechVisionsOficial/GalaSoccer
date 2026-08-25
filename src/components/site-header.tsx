@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CartLink } from "@/components/cart-link";
+import { UserMenu } from "@/components/user-menu";
 
 export function SiteHeader() {
   return (
@@ -23,6 +24,7 @@ export function SiteHeader() {
               Seleções
             </a>
           </nav>
+          <UserMenu />
           <CartLink />
         </div>
       </div>

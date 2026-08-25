@@ -102,6 +102,18 @@ mesma categoria). Cada time também tem página própria (`/times/[slug]`) lista
 seus produtos; o nome do time é link pra lá tanto no card quanto na página do
 produto.
 
+**Login de cliente (`/login`, `/signup`)**: Supabase Auth — e-mail/senha e Google
+OAuth. Helpers em `lib/supabase/{client,server,middleware}.ts` (padrão `@supabase/
+ssr`), sessão renovada via `src/middleware.ts`. `app/auth/callback/route.ts` troca
+o code do OAuth por sessão. Em login/cadastro (e-mail ou Google), o `Customer` do
+Prisma é criado/atualizado via upsert por e-mail com `supabaseUserId` preenchido —
+liga a conta a pedidos feitos antes como guest, se o e-mail bater. Cadastro por
+e-mail pode exigir confirmação por e-mail antes de criar sessão (configuração
+padrão do Supabase). Login social exige habilitar o provider em Supabase →
+Authentication → Providers → Google (Client ID/Secret do Google Cloud OAuth
+consent screen, redirect URI `https://<project-ref>.supabase.co/auth/v1/callback`).
+É um sistema **separado** do login do `/admin` (que ainda não existe).
+
 Sem foto de produto real ainda: cards e página do produto usam um placeholder com
 gradiente por categoria (`lib/category-visuals.ts`) + iniciais do time
 (`lib/format.ts`). Trocar por `<Image>` real quando houver fotos.
