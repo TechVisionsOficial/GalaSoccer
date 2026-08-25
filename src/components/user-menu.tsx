@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, LogOut, Package, User, UserCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useCart } from "@/components/cart-provider";
 
 export function UserMenu() {
   const router = useRouter();
+  const { clear: clearCart } = useCart();
   const [name, setName] = useState<string | null>();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -55,6 +57,7 @@ export function UserMenu() {
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    clearCart();
     setOpen(false);
     router.push("/");
     router.refresh();
