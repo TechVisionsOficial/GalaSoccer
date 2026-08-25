@@ -18,7 +18,10 @@ export function getProductBySlug(slug: string) {
       team: true,
       variants: { orderBy: { size: "asc" } },
       images: { orderBy: { position: "asc" } },
-      reviews: { orderBy: { createdAt: "desc" } },
+      reviews: {
+        orderBy: { createdAt: "desc" },
+        include: { customer: { select: { name: true } } },
+      },
     },
   });
 }

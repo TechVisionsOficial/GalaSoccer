@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { Star } from "lucide-react";
 import { createReview } from "@/app/produtos/[slug]/actions";
 
@@ -16,10 +16,19 @@ export function ReviewForm({
 }) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const [state, formAction, isPending] = useActionState(createReview, null);
+
+  if (state && "success" in state) {
+    return (
+      <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+        Avaliação enviada, obrigado!
+      </div>
+    );
+  }
 
   return (
     <form
-      action={createReview}
+      action={formAction}
       className="flex flex-col gap-3 rounded-lg border border-neutral-200 p-4"
     >
       <input type="hidden" name="productId" value={productId} />
@@ -29,6 +38,9 @@ export function ReviewForm({
       <span className="text-sm font-medium text-neutral-700">
         Deixe sua avaliação
       </span>
+      <p className="text-xs text-neutral-400">
+        Só quem comprou e já recebeu o produto pode avaliar.
+      </p>
 
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -54,9 +66,10 @@ export function ReviewForm({
       </div>
 
       <input
-        name="authorName"
+        name="email"
+        type="email"
         required
-        placeholder="Seu nome"
+        placeholder="E-mail usado na compra"
         className={inputClass}
       />
       <textarea
@@ -66,12 +79,16 @@ export function ReviewForm({
         className={inputClass}
       />
 
+      {state && "error" in state && (
+        <p className="text-sm text-red-600">{state.error}</p>
+      )}
+
       <button
         type="submit"
-        disabled={rating === 0}
+        disabled={rating === 0 || isPending}
         className="self-start rounded-md bg-brand-primary px-5 py-2 text-sm font-medium text-brand-foreground transition hover:bg-brand-primary-dark disabled:cursor-not-allowed disabled:opacity-40"
       >
-        Enviar avaliação
+        {isPending ? "Enviando..." : "Enviar avaliação"}
       </button>
     </form>
   );

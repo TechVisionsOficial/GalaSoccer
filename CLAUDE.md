@@ -56,8 +56,10 @@ verdade a partir de agora, não esta lista:
 - `Customer` / `Address` — cliente final e endereços de entrega.
 - `Order` / `OrderItem` — pedido e itens.
 - `Payment` — status e referência da transação Mercado Pago.
-- `Review` — avaliação com nota (1-5) e comentário, sem exigir login (mesmo
-  padrão guest do checkout — nome informado na hora).
+- `Review` — avaliação com nota (1-5) e comentário. **Compra verificada**: só
+  quem tem um `Order` com status `DELIVERED` contendo aquele produto pode
+  avaliar (checado pelo e-mail informado, sem precisar de login — mesmo padrão
+  guest do checkout). Único por produto+cliente (não dá pra avaliar 2x).
 - `Admin` — usuário do painel administrativo.
 
 **Prisma 7**: a connection string do datasource não vai mais no `schema.prisma`
@@ -92,8 +94,9 @@ consegue editar o catálogo. Precisa de Supabase Auth antes de ir pra produção
 **Loja (`/`, `/produtos/[slug]`, `/times/[slug]`)**: conectada ao banco real (não
 usa mais dados fictícios). Cada produto tem página própria com seletor de tamanho
 (`components/size-selector.tsx`) mostrando preço e estoque por variante, avaliações
-com estrelas (nota + comentário, `components/review-form.tsx`,
-`app/produtos/[slug]/actions.ts`) e recomendações de produtos relacionados
+com estrelas restritas a compra verificada (nota + comentário,
+`components/review-form.tsx`, `app/produtos/[slug]/actions.ts`) e recomendações
+de produtos relacionados
 (`lib/products.ts#getRecommendedProducts` — prioriza mesmo time, completa com
 mesma categoria). Cada time também tem página própria (`/times/[slug]`) listando
 seus produtos; o nome do time é link pra lá tanto no card quanto na página do

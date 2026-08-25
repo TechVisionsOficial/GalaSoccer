@@ -133,13 +133,18 @@ export default async function ProductPage({
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-neutral-900">
-                          {review.authorName}
+                          {review.customer.name}
                         </span>
                         <span className="text-xs text-neutral-400">
                           {review.createdAt.toLocaleDateString("pt-BR")}
                         </span>
                       </div>
-                      <StarRating rating={review.rating} size={14} />
+                      <div className="flex items-center gap-2">
+                        <StarRating rating={review.rating} size={14} />
+                        <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">
+                          Compra verificada
+                        </span>
+                      </div>
                       {review.comment && (
                         <p className="mt-1 text-sm text-neutral-600">
                           {review.comment}
