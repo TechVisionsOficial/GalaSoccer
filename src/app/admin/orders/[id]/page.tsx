@@ -3,14 +3,11 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/format";
 import { updateOrderStatus } from "../actions";
+import { orderStatusLabels } from "@/lib/enum-labels";
 
-const statusOptions = [
-  { value: "PENDING", label: "Pendente" },
-  { value: "PAID", label: "Pago" },
-  { value: "SHIPPED", label: "Enviado" },
-  { value: "DELIVERED", label: "Entregue" },
-  { value: "CANCELED", label: "Cancelado" },
-];
+const statusOptions = Object.entries(orderStatusLabels).map(
+  ([value, label]) => ({ value, label }),
+);
 
 export default async function OrderDetailPage({
   params,

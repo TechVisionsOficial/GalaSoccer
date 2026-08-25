@@ -43,6 +43,18 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/*
+ * Nenhuma tela com formulário (admin, checkout) tem um modo escuro próprio —
+ * são sempre fundo branco/claro. Sem isso, campos herdam --foreground (que
+ * vira quase branco no modo escuro do sistema) e o texto digitado fica
+ * ilegível sobre o fundo branco do input.
+ */
+input,
+select,
+textarea {
+  color: #171717;
+}
+
 @keyframes blob-float {
   0%,
   100% {

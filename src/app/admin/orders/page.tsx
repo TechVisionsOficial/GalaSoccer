@@ -1,22 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/format";
-
-const orderStatusLabels: Record<string, string> = {
-  PENDING: "Pendente",
-  PAID: "Pago",
-  SHIPPED: "Enviado",
-  DELIVERED: "Entregue",
-  CANCELED: "Cancelado",
-};
-
-const orderStatusStyles: Record<string, string> = {
-  PENDING: "bg-amber-100 text-amber-700",
-  PAID: "bg-green-100 text-green-700",
-  SHIPPED: "bg-blue-100 text-blue-700",
-  DELIVERED: "bg-neutral-200 text-neutral-700",
-  CANCELED: "bg-red-100 text-red-700",
-};
+import { orderStatusLabels, orderStatusStyles } from "@/lib/enum-labels";
 
 export default async function OrdersPage() {
   const orders = await prisma.order.findMany({
