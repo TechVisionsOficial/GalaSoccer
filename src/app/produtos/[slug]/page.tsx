@@ -65,6 +65,12 @@ export default async function ProductPage({
               </p>
 
               <SizeSelector
+                product={{
+                  id: product.id,
+                  slug: product.slug,
+                  name: product.name,
+                  teamName: product.team.name,
+                }}
                 variants={product.variants.map((v) => ({
                   id: v.id,
                   size: v.size,

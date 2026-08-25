@@ -82,20 +82,37 @@ prisma/
   schema.prisma   # modelo de dados
 ```
 
-**Admin (`/admin`)**: CRUD funcional de Times e Produtos direto no Supabase via
-Server Actions (`teams/actions.ts`, `products/actions.ts`), validado com Zod. Ainda
-**sem autenticação** — qualquer um que acesse a rota consegue editar o catálogo.
-Precisa de Supabase Auth antes de ir pra produção.
+**Admin (`/admin`)**: CRUD funcional de Times, Produtos e visualização de Pedidos
+direto no Supabase via Server Actions (`teams/actions.ts`, `products/actions.ts`),
+validado com Zod. Ainda **sem autenticação** — qualquer um que acesse a rota
+consegue editar o catálogo. Precisa de Supabase Auth antes de ir pra produção.
 
-**Loja (`/`, `/produtos/[slug]`)**: já conectada ao banco real (não usa mais dados
+**Loja (`/`, `/produtos/[slug]`)**: conectada ao banco real (não usa mais dados
 fictícios). Cada produto tem página própria com seletor de tamanho
-(`components/size-selector.tsx`) mostrando preço e estoque por variante. O botão
-"Adicionar ao carrinho" ainda é só uma prévia de interação — carrinho e checkout
-(Mercado Pago) são o próximo passo.
+(`components/size-selector.tsx`) mostrando preço e estoque por variante.
 
 Sem foto de produto real ainda: cards e página do produto usam um placeholder com
 gradiente por categoria (`lib/category-visuals.ts`) + iniciais do time
 (`lib/format.ts`). Trocar por `<Image>` real quando houver fotos.
+
+**Carrinho e checkout**: carrinho é client-side (`components/cart-provider.tsx`,
+persistido em `localStorage`, sem Customer/sessão — compra é sempre "guest
+checkout"). `/checkout` coleta dados do cliente + endereço e chama a Server Action
+`createOrder` (`checkout/actions.ts`), que:
+1. Revalida preço/estoque contra o banco (nunca confia no que o client mandou).
+2. Cria Customer (upsert por e-mail) + Address + Order + OrderItems + Payment
+   (tudo numa transação), decrementando o estoque das variantes.
+3. Se `MERCADOPAGO_ACCESS_TOKEN` estiver configurado, cria uma *preference* no
+   Mercado Pago (Checkout Pro) e redireciona pro checkout hospedado deles: página
+   /checkout/sucesso, /checkout/erro ou /checkout/pendente confirma o pagamento
+   consultando a API do Mercado Pago diretamente (`lib/order-sync.ts`) — não
+   depende só do webhook, porque em dev `localhost` não é alcançável pelo
+   Mercado Pago para notificações (`api/webhooks/mercadopago/route.ts` existe
+   pra produção). Sem as credenciais, o pedido é criado mas fica pendente com
+   um aviso — nada quebra, só não processa o pagamento de fato.
+
+`Payment.method` é opcional no schema: só sabemos Pix/boleto/cartão depois que o
+cliente escolhe na página do Mercado Pago.
 
 ## Variáveis de ambiente
 

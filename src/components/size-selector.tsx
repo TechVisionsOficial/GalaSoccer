@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/format";
+import { useCart } from "@/components/cart-provider";
 
 type Variant = {
   id: string;
@@ -10,7 +12,22 @@ type Variant = {
   stock: number;
 };
 
-export function SizeSelector({ variants }: { variants: Variant[] }) {
+type Product = {
+  id: string;
+  slug: string;
+  name: string;
+  teamName: string;
+};
+
+export function SizeSelector({
+  product,
+  variants,
+}: {
+  product: Product;
+  variants: Variant[];
+}) {
+  const router = useRouter();
+  const { addItem } = useCart();
   const firstAvailable = variants.find((v) => v.stock > 0);
   const [selectedId, setSelectedId] = useState<string | null>(
     firstAvailable?.id ?? null,
@@ -19,6 +36,21 @@ export function SizeSelector({ variants }: { variants: Variant[] }) {
 
   const selected = variants.find((v) => v.id === selectedId);
   const fallbackPrice = Math.min(...variants.map((v) => v.priceCents));
+
+  function handleAddToCart() {
+    if (!selected) return;
+    addItem({
+      variantId: selected.id,
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.name,
+      teamName: product.teamName,
+      size: selected.size,
+      priceCents: selected.priceCents,
+      maxStock: selected.stock,
+    });
+    setAdded(true);
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -61,21 +93,25 @@ export function SizeSelector({ variants }: { variants: Variant[] }) {
         )}
       </div>
 
-      <button
-        type="button"
-        disabled={!selected}
-        onClick={() => setAdded(true)}
-        className="rounded-md bg-brand-primary px-6 py-3 text-sm font-bold text-brand-foreground transition hover:bg-brand-primary-dark disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        {added ? "Adicionado ✓" : "Adicionar ao carrinho"}
-      </button>
-
-      {added && (
-        <p className="text-xs text-neutral-500">
-          Carrinho e checkout ainda não existem — essa é só uma prévia da
-          interação, é o próximo passo.
-        </p>
-      )}
+      <div className="flex gap-3">
+        <button
+          type="button"
+          disabled={!selected}
+          onClick={handleAddToCart}
+          className="flex-1 rounded-md bg-brand-primary px-6 py-3 text-sm font-bold text-brand-foreground transition hover:bg-brand-primary-dark disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {added ? "Adicionado ✓" : "Adicionar ao carrinho"}
+        </button>
+        {added && (
+          <button
+            type="button"
+            onClick={() => router.push("/carrinho")}
+            className="rounded-md border border-brand-primary px-6 py-3 text-sm font-bold text-brand-primary transition hover:bg-brand-primary/5"
+          >
+            Ver carrinho
+          </button>
+        )}
+      </div>
     </div>
   );
 }

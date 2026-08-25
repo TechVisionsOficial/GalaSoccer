@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { LayoutDashboard, Shirt, Users2 } from "lucide-react";
+import { LayoutDashboard, Shirt, Users2, Receipt } from "lucide-react";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Produtos", icon: Shirt },
   { href: "/admin/teams", label: "Times", icon: Users2 },
+  { href: "/admin/orders", label: "Pedidos", icon: Receipt },
 ];
 
 export default function AdminLayout({

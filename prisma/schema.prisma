@@ -173,10 +173,12 @@ enum PaymentStatus {
 }
 
 model Payment {
-  id                   String        @id @default(cuid())
-  method               PaymentMethod
-  status               PaymentStatus @default(PENDING)
-  mercadoPagoPaymentId String?       @unique
+  id                   String         @id @default(cuid())
+  // Nulo até o cliente escolher Pix/boleto/cartão na página do Mercado Pago
+  // (Checkout Pro) — só sabemos o método via webhook, depois do pagamento.
+  method               PaymentMethod?
+  status               PaymentStatus  @default(PENDING)
+  mercadoPagoPaymentId String?        @unique
   amountCents          Int
 
   orderId String @unique
