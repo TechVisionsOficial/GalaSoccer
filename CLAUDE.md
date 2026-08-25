@@ -44,19 +44,45 @@ sem precisar caçar cada uso:
 Qualquer componente deve usar essas classes semânticas (`bg-brand-primary`,
 `text-brand-accent`, etc.), nunca `bg-green-800` ou hex direto.
 
-## Modelo de dados (visão inicial)
+## Modelo de dados
 
-- `Team` — time/seleção (nome, escudo, categoria).
-- `Category` — Nacional / Internacional / Seleções.
-- `Product` — camiseta (time, temporada, tipo — titular/reserva/retrô).
-- `ProductVariant` — tamanho (P/M/G/GG) + preço + estoque.
-- `Customer` — cliente final.
+Implementado em [`prisma/schema.prisma`](prisma/schema.prisma) — essa é a fonte de
+verdade a partir de agora, não esta lista:
+
+- `Team` — time/seleção (nome, escudo, categoria: Nacional/Internacional/Seleção).
+- `Product` / `ProductImage` — camiseta (time, temporada, tipo — titular/reserva/
+  terceira/retrô/goleiro).
+- `ProductVariant` — tamanho (P/M/G/GG/XG) + preço + estoque.
+- `Customer` / `Address` — cliente final e endereços de entrega.
 - `Order` / `OrderItem` — pedido e itens.
 - `Payment` — status e referência da transação Mercado Pago.
 - `Admin` — usuário do painel administrativo.
 
-Esse modelo é ponto de partida; deve evoluir conforme o schema Prisma for
-implementado — não é fonte de verdade após o código existir.
+**Prisma 7**: a connection string do datasource não vai mais no `schema.prisma`
+(`url` foi removido de lá). O client em runtime usa um *driver adapter*
+(`@prisma/adapter-pg`, ver [`src/lib/prisma.ts`](src/lib/prisma.ts)), e o CLI/Migrate
+lê a URL de [`prisma7.config.ts`](prisma7.config.ts). O client gerado vai para
+`src/generated/prisma` (gitignored — rodar `npx prisma generate` após clonar).
+
+## Estrutura de pastas
+
+```
+src/
+  app/            # rotas (App Router)
+    admin/        # painel administrativo (placeholder por enquanto)
+    page.tsx      # home da loja
+  components/     # componentes de UI compartilhados
+  lib/            # clients e utilitários (ex: prisma.ts)
+  generated/      # código gerado (Prisma Client) — gitignored
+prisma/
+  schema.prisma   # modelo de dados
+```
+
+## Variáveis de ambiente
+
+Ver [`.env.example`](.env.example) — copiar para `.env` (nunca commitado) e
+preencher: `DATABASE_URL` (Supabase Postgres), chaves do Supabase, Mercado Pago
+e Resend.
 
 ## Convenções de código
 

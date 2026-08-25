@@ -1,0 +1,196 @@
+// Prisma schema — Gala Soccer
+// Modelo de dados descrito em CLAUDE.md > "Modelo de dados"
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TeamCategory {
+  NACIONAL
+  INTERNACIONAL
+  SELECAO
+}
+
+model Team {
+  id       String       @id @default(cuid())
+  name     String
+  slug     String       @unique
+  crestUrl String?
+  category TeamCategory
+
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum ProductType {
+  TITULAR
+  RESERVA
+  TERCEIRA
+  RETRO
+  GOLEIRO
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String?
+  season      String?
+  type        ProductType @default(TITULAR)
+  active      Boolean     @default(true)
+
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id])
+
+  images     ProductImage[]
+  variants   ProductVariant[]
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductImage {
+  id       String @id @default(cuid())
+  url      String
+  position Int    @default(0)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum Size {
+  P
+  M
+  G
+  GG
+  XG
+}
+
+model ProductVariant {
+  id         String @id @default(cuid())
+  size       Size
+  priceCents Int
+  stock      Int    @default(0)
+  sku        String @unique
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  orderItems OrderItem[]
+
+  @@unique([productId, size])
+}
+
+model Customer {
+  id             String  @id @default(cuid())
+  name           String
+  email          String  @unique
+  phone          String?
+  supabaseUserId String? @unique
+
+  addresses Address[]
+  orders    Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Address {
+  id         String  @id @default(cuid())
+  street     String
+  number     String
+  complement String?
+  district   String
+  city       String
+  state      String
+  zipCode    String
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  orders Order[]
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  status     OrderStatus @default(PENDING)
+  totalCents Int
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  addressId String?
+  address   Address? @relation(fields: [addressId], references: [id])
+
+  items   OrderItem[]
+  payment Payment?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id             String @id @default(cuid())
+  quantity       Int
+  unitPriceCents Int
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  productVariantId String
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+}
+
+enum PaymentMethod {
+  PIX
+  BOLETO
+  CREDIT_CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REFUNDED
+}
+
+model Payment {
+  id                   String        @id @default(cuid())
+  method               PaymentMethod
+  status               PaymentStatus @default(PENDING)
+  mercadoPagoPaymentId String?       @unique
+  amountCents          Int
+
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  id             String @id @default(cuid())
+  name           String
+  email          String @unique
+  supabaseUserId String @unique
+
+  createdAt DateTime @default(now())
+}
