@@ -39,10 +39,10 @@ export default async function CustomerOrderDetailPage({
       <main className="flex flex-1 flex-col bg-white">
         <div className="mx-auto w-full max-w-3xl px-6 py-10">
           <Link
-            href="/account"
+            href="/account/orders"
             className="text-sm text-neutral-500 hover:text-neutral-700"
           >
-            ← Minha conta
+            ← Meus pedidos
           </Link>
 
           <div className="mt-2 flex items-center justify-between">

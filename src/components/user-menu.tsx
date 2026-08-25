@@ -100,7 +100,7 @@ export function UserMenu() {
             Minha conta
           </Link>
           <Link
-            href="/account#pedidos"
+            href="/account/orders"
             onClick={() => setOpen(false)}
             className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-50"
           >
