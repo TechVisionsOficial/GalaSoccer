@@ -42,7 +42,7 @@ export default async function AccountPage() {
               />
             </div>
 
-            <div className="flex-1">
+            <div id="pedidos" className="flex-1 scroll-mt-6">
               <h2 className="mb-3 text-sm font-semibold text-neutral-900">
                 Meus pedidos
               </h2>

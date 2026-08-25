@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User } from "lucide-react";
+import { ChevronDown, LogOut, Package, User, UserCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export function UserMenu() {
   const router = useRouter();
   const [name, setName] = useState<string | null>();
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -40,9 +42,20 @@ export function UserMenu() {
     return () => subscription.subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    setOpen(false);
     router.push("/");
     router.refresh();
   }
@@ -66,17 +79,44 @@ export function UserMenu() {
   const firstName = name.split(" ")[0];
 
   return (
-    <div className="flex items-center gap-3 text-sm">
-      <Link href="/account" className="hover:text-brand-accent-light">
-        {firstName}
-      </Link>
+    <div ref={menuRef} className="relative">
       <button
         type="button"
-        onClick={handleSignOut}
-        className="text-brand-foreground/70 hover:text-brand-accent-light"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 text-sm hover:text-brand-accent-light"
       >
-        Sair
+        {firstName}
+        <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} />
       </button>
+
+      {open && (
+        <div className="absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-md border border-neutral-200 bg-white py-1 text-neutral-700 shadow-lg">
+          <Link
+            href="/account"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-50"
+          >
+            <UserCircle className="h-4 w-4" strokeWidth={2} />
+            Minha conta
+          </Link>
+          <Link
+            href="/account#pedidos"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-50"
+          >
+            <Package className="h-4 w-4" strokeWidth={2} />
+            Meus pedidos
+          </Link>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-neutral-50"
+          >
+            <LogOut className="h-4 w-4" strokeWidth={2} />
+            Sair
+          </button>
+        </div>
+      )}
     </div>
   );
 }
